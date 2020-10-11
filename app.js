@@ -35,6 +35,12 @@ app.get("/compose",(req,res)=>{
   res.render("compose");
 });
 
+// compose post route
+app.post("/compose",(req,res)=>{
+  let postTitle = req.body.newComposePostTitle;
+  console.log(postTitle);
+  res.redirect("/compose");
+});
 
 
 
