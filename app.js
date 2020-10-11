@@ -30,7 +30,10 @@ app.get("/contact",(req,res)=>{
   res.render("contact",{contactStartingContent:contactContent});
 });
 
-
+// compose route
+app.get("/compose",(req,res)=>{
+  res.render("compose");
+});
 
 
 
