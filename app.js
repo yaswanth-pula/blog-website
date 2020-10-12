@@ -50,7 +50,11 @@ app.post("/compose",(req,res)=>{
 
 // post params route
 app.get('/posts/:postName',(req,res)=>{
-    console.log(req.params.postName);
+    const postName = req.params.postName;
+    posts.forEach(post=>{
+      if(post.title===postName)
+        console.log("Match Found");
+    })
 });
 
 
