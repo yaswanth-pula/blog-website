@@ -15,9 +15,13 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
+// save all the newly created post(s).
+const posts = []; 
+
 // root route
 app.get("/",(req,res)=>{
   res.render("home",{homeStartingContent:homeStartingContent});
+  console.log(posts); 
 });
 
 // about route
@@ -37,12 +41,12 @@ app.get("/compose",(req,res)=>{
 
 // compose post route
 app.post("/compose",(req,res)=>{
-  const post = {
+  const newPost = {
     title: req.body.newComposePostTitle,
     content : req.body.newComposePostText
   }
-  // console.log(post);
-  res.redirect("/compose");
+  posts.push(newPost);
+  res.redirect("/");
 });
 
 
