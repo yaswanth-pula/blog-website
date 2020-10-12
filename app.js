@@ -20,8 +20,7 @@ const posts = [];
 
 // root route
 app.get("/",(req,res)=>{
-  res.render("home",{homeStartingContent:homeStartingContent});
-  console.log(posts); 
+  res.render("home",{homeStartingContent:homeStartingContent, htmlPosts:posts});
 });
 
 // about route
