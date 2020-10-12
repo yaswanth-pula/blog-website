@@ -2,7 +2,8 @@
     <h1>Home</h1>
     <p><%= homeStartingContent %> </p>
     <% htmlPosts.forEach(htmlPost => { %>
-        <h1><%= htmlPost.title %> </h1>
-        <p><%= htmlPost.content %> </p>
+        <h1><%= htmlPost.title %> </h1> 
+        <p>
+            <%= htmlPost.content.substring(0,100)+" ..." %> 
     <% }) %>
 <%- include('partials/footer'); %>
