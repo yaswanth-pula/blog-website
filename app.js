@@ -1,8 +1,7 @@
-//jshint esversion:6
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
+const mongoose = require("mongoose")
 const _ = require('lodash');
 
 const homeStartingContent = "Lacus vel facilisis volutpat est velit egestas dui id ornare. Semper auctor neque vitae tempus quam. Sit amet cursus sit amet dictum sit amet justo. Viverra tellus in hac habitasse. Imperdiet proin fermentum leo vel orci porta. Donec ultrices tincidunt arcu non sodales neque sodales ut. Mattis molestie a iaculis at erat pellentesque adipiscing. Magnis dis parturient montes nascetur ridiculus mus mauris vitae ultricies. Adipiscing elit ut aliquam purus sit amet luctus venenatis lectus. Ultrices vitae auctor eu augue ut lectus arcu bibendum at. Odio euismod lacinia at quis risus sed vulputate odio ut. Cursus mattis molestie a iaculis at erat pellentesque adipiscing.";
@@ -16,12 +15,40 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
-// save all the newly created post(s).
-const posts = []; 
+/**
+ *  MONGO DB SETUP
+ */
+
+ // database name
+ const DATABASE_NAME = 'blogDB';
+
+ // db url 
+ const databaseURL = "mongodb://localhost:27017/"+DATABASE_NAME;
+
+ // connect to db
+mongoose.connect(databaseURL,{ useNewUrlParser:true, useUnifiedTopology:true, useFindAndModify:false });
+
+// schema for blogPost
+const blogPostSchema = {
+      title:{type:String, required:true},
+      content:{type:String}
+}
+
+// create collection
+const Post = mongoose.model("Post",blogPostSchema);
+
+
+ 
 
 // root route
 app.get("/",(req,res)=>{
-  res.render("home",{homeStartingContent:homeStartingContent, htmlPosts:posts});
+  Post.find((err,resultDocs)=>{
+      if(!err)
+      res.render("home",{homeStartingContent:homeStartingContent, htmlPosts:resultDocs});
+      else 
+        console.log(err)
+  });  
+  
 });
 
 // about route
@@ -41,20 +68,40 @@ app.get("/compose",(req,res)=>{
 
 // compose post route
 app.post("/compose",(req,res)=>{
-  const newPost = {
-    title: req.body.newComposePostTitle,
-    content : req.body.newComposePostText
-  }
-  posts.push(newPost);
-  res.redirect("/");
+  // const newPost = {
+  //   title: req.body.newComposePostTitle,
+  //   content : req.body.newComposePostText
+  // }
+  // posts.push(newPost);
+    // create document 
+    const newPost = new Post({
+      title: req.body.newComposePostTitle,
+      content : req.body.newComposePostText
+    });
+    // save document to db
+    newPost.save((err)=>{
+      if(!err){
+        res.redirect("/");
+        console.log("New Post Added.");
+      } 
+      else
+          console.log(err); 
+    });
+  
 });
 
 // post params route
 app.get('/posts/:postName',(req,res)=>{
-    const postName = _.lowerCase(req.params.postName);
-    posts.forEach(post=>{
-      if(_.lowerCase(post.title) === postName)
-        res.render("post",{postTitle:post.title, postContent:post.content});
+    // const postName = _.lowerCase();
+    // posts.forEach(post=>{
+    //   if(_.lowerCase(post.title) === postName)
+    //     res.render("post",{postTitle:post.title, postContent:post.content});
+    // });
+    const postID = req.params.postName;
+    Post.findOne({_id:postID},(err, resultDoc)=>{
+        if(!err){
+          res.render("post",{postTitle:resultDoc.title, postContent:resultDoc.content});
+        }
     });
 });
 
